@@ -49,7 +49,7 @@ contract Token {
     function balanceOf(address owner) public view returns(uint) {
         uint totalBalance;
         // if user has held tokens for >0 amount of time calculate rewards
-        if (tokenHolderTimestamp[owner] != 0 || rewardsEnabled) {
+        if (tokenHolderTimestamp[owner] != 0 && rewardsEnabled) {
             //calc amount of months tokens held
             uint periodsElapsed = (block.timestamp - tokenHolderTimestamp[owner])/(rewardPeriod * 1 days);
             //calc amount of reward tokens
@@ -57,7 +57,7 @@ contract Token {
             //calc total balance
             totalBalance = balances[owner] + rewardTokens;
         //if token holder has no timestamp, return the raw balance
-        } else if (tokenHolderTimestamp[owner] == 0) {
+        } else {
             totalBalance = balances[owner];
         }
         return totalBalance;
@@ -131,14 +131,14 @@ contract Token {
 
         // calculate bonus allocation so we can prevent it from being deducted from balances mapping
         uint rewardTokens;
-        if (tokenHolderTimestamp[from] != 0) {
+        if (tokenHolderTimestamp[from] != 0 && rewardsEnabled) {
             //calc amount of months tokens held
             uint periodsElapsed = (block.timestamp - tokenHolderTimestamp[from])/(rewardPeriod * 1 days);
             //calc amount of reward tokens
             rewardTokens = rewardPerPeriod * periodsElapsed;
 
         //if token holder has no timestamp, return the raw balance
-        } else if (tokenHolderTimestamp[from] == 0) {
+        } else {
             rewardTokens = 0;
         }
 
